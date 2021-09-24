@@ -33,8 +33,12 @@ Return XLSX Report from the given 'List of Dictionary' data.
         #Generate report
         return self.env['web.report'].generate_report('My Report Name',my_report_data)
 
+**Authors :**
+- Liong (nagara987@gmail.com)
+https://www.linkedin.com/in/nagara-liong-50ab07136/
 
 **Result Example :**
+
 
 ![image](https://user-images.githubusercontent.com/52643098/134668255-ffed5b33-52bf-4762-8d60-75b007c2e38d.png)
 
