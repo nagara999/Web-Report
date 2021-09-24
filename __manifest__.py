@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "dms_report",
+    'name': "Web Report",
 
     'summary': """
         create report with query result
