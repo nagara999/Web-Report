@@ -9,7 +9,8 @@ import string
 import time
 import tempfile
 import xlsxwriter
-from io import BytesIO
+import cStringIO
+from cStringIO import StringIO
 from datetime import datetime, timedelta,date
 from dateutil.relativedelta import relativedelta
 from odoo import models, fields, api, _
@@ -21,6 +22,7 @@ class WebReport(models.TransientModel):
     _name = "web.report"
     _description = "Report Utils"
 
+    
     @api.model
     def _get_default_datetime_plus_7(self): 
         return datetime.now() + timedelta(hours=7)
@@ -28,6 +30,7 @@ class WebReport(models.TransientModel):
     name = fields.Char(string='Name')
     report_file = fields.Binary('File', readonly=True)
 
+    
     wbf = {}
 
     def generate_report(self
@@ -62,7 +65,7 @@ class WebReport(models.TransientModel):
         if not data:
             raise Warning("There is no data available.")
 
-        fp = BytesIO()
+        fp = StringIO()
         workbook = xlsxwriter.Workbook(fp)       
         workbook = self.add_workbook_format(workbook,header_color)
         wbf = self.wbf
@@ -74,12 +77,12 @@ class WebReport(models.TransientModel):
         
         # Initialize params
         column_size = []
-        header_len = len(list(data[0].keys()))
+        header_len = len(data[0].keys())
         header_row = 0
         number = 1
         row = 0
         col = 0
-
+        
         # Handle title
         if start_date:
             # Change header row
@@ -95,40 +98,49 @@ class WebReport(models.TransientModel):
 
             row += 2
 
+        # Handle header (First data)
+        if header:
+            # Get ordered key from cursor
+            key_ordered = [d[0] for d in self._cr.description]
+            if key_ordered:
+                header_titles = key_ordered
+            else:
+                header_titles = data[0]
+
+
+            # Give column number
+            if numbering:
+                worksheet.write(row, col, "No", wbf['header'])
+                column_size.append(2)
+                col += 1
+            
+            # Loop key for Header/Title
+            for key in header_titles:
+                # Wirte Header Title with key from dictionary
+                formated_header_string = key.replace('_',' ')
+                # IF capitalize params is true and not all word is uppercase, capitalize words
+                if capitalize and not formated_header_string.isupper():
+                    formated_header_string = formated_header_string.capitalize()
+
+                worksheet.write(row, col, formated_header_string, wbf['header'])
+                
+                # Write initial column size
+                column_size.append(len(str(formated_header_string)))
+                col+=1
+            row +=1
+            col = 0
+
+        
         for line in data:
             col = 0
-            # Handle header (First data)
-            if header and number == 1:
-                
-                # Give column number
-                if numbering:
-                    worksheet.write(row, col, "No", wbf['header'])
-                    column_size.append(2)
-                    col += 1
-                
-                # Loop key for Header/Title
-                for key in line:
-                    # Wirte Header Title with key from dictionary
-                    formated_header_string = key.replace('_',' ')
-                    # IF capitalize params is true and not all word is uppercase, capitalize words
-                    if capitalize and not formated_header_string.isupper():
-                        formated_header_string = formated_header_string.capitalize()
-
-                    worksheet.write(row, col, formated_header_string, wbf['header'])
-                    
-                    # Write initial column size
-                    column_size.append(len(str(formated_header_string)))
-                    col+=1
-                row +=1
-                col = 0
-
+            
             # Give column number
             if numbering:
                 worksheet.write(row, col, number, wbf['content'])
                 col += 1
 
             # Write Content
-            for key in line:
+            for key in header_titles:
                 # Define Cell format
                 cell_format = 'content'
                 if isinstance(line[key], float):
@@ -136,7 +148,7 @@ class WebReport(models.TransientModel):
                 worksheet.write(row, col, line[key], wbf[cell_format])
 
                 # Change column size if content bigger than previous stored size
-                current_column_index = list(line.keys()).index(key) + int(numbering)
+                current_column_index = header_titles.index(key) + int(numbering)
                 if column_size[current_column_index] < len(str(line[key])):
                     column_size[current_column_index] = (len(str(line[key])))
 
@@ -165,7 +177,6 @@ class WebReport(models.TransientModel):
         # Set bottom remark
         if bottom_remark:
             worksheet.merge_range('A%s:D%s'%(row+2,row+2), '%s - %s' % (self.sudo().env.user.name, str(self._get_default_datetime_plus_7())) , wbf['footer']) 
-            
         workbook.close()
         out=base64.encodestring(fp.getvalue())
         report = self.sudo().create({
@@ -180,12 +191,13 @@ class WebReport(models.TransientModel):
             'url': '/web/content/web.report/%s/report_file/%s?download=true' % (report.id, filename)
         }  
             
+        
     
     def add_workbook_format(self, workbook, header_color):
         
         self.wbf['title_doc'] = workbook.add_format({'bold': 1,'align': 'left'})
         self.wbf['title_doc'].set_font_size(12)
-
+        
         self.wbf['footer'] = workbook.add_format({'align':'left'})
 
         self.wbf['header'] = workbook.add_format({'bg_color':header_color,'bold': 1,'align': 'center','font_color': '#000000'})
