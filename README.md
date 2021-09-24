@@ -18,9 +18,11 @@ Return XLSX Report from the given 'List of Dictionary' data.
 - bottom_remark: Enable/Disable remark Give remark at the bottom of the workbook. The remark contains Downloader name & Download date
 
 **return :** 
+
 -xlsx file of the generated report
 
-**Usage Example**
+**Usage Example :**
+
 def generate_report(self):
     query = " SELECT * from res_partner limit 10"
     self.env.cr.execute(query)
