@@ -26,10 +26,11 @@ Return XLSX Report from the given 'List of Dictionary' data.
 **Usage Example :**
 
     def generate_report(self):
-        #Example : get data
+        #Example -> get data
         query = " SELECT * from res_partner limit 10"
         self.env.cr.execute(query)
         my_report_data = self.env.cr.dictfetchall()
+        
         #Generate report
         return self.env['web.report'].generate_report('My Report Name',my_report_data)
 
