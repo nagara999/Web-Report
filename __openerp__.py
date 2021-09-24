@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Web Report",
+    'name': "Report from Query Result",
 
     'summary': """
         create report with query result
