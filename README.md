@@ -17,9 +17,11 @@ Return XLSX Report from the given 'List of Dictionary' data.
 - freeze_panes_column: Freeze column from given integer (starting from 0). The default will be 0, however.. this only active when params header & freeze_panes is true
 - bottom_remark: Enable/Disable remark Give remark at the bottom of the workbook. The remark contains Downloader name & Download date
 
-**return :** 
+
+**Return :** 
 
 -xlsx file of the generated report
+
 
 **Usage Example :**
 
