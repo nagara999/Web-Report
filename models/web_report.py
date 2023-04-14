@@ -28,6 +28,9 @@ class WebReport(models.TransientModel):
     name = fields.Char(string='Name')
     report_file = fields.Binary('File', readonly=True)
 
+    def custom_title(self,text):
+        return re.sub(r"(?:(?<=\W)|^)\w(?=\w)", lambda x: x.group(0).upper(), text)
+
     wbf = {}
 
     def generate_report(self
@@ -112,7 +115,7 @@ class WebReport(models.TransientModel):
                     formated_header_string = key.replace('_',' ')
                     # IF capitalize params is true and not all word is uppercase, capitalize words
                     if capitalize and not formated_header_string.isupper():
-                        formated_header_string = formated_header_string.capitalize()
+                        formated_header_string = self.custom_title(formated_header_string)
 
                     worksheet.write(row, col, formated_header_string, wbf['header'])
                     
