@@ -30,6 +30,8 @@ class WebReport(models.TransientModel):
     name = fields.Char(string='Name')
     report_file = fields.Binary('File', readonly=True)
 
+    def custom_title(self,text):
+        return re.sub(r"(?:(?<=\W)|^)\w(?=\w)", lambda x: x.group(0).upper(), text)
     
     wbf = {}
 
@@ -97,7 +99,7 @@ class WebReport(models.TransientModel):
             worksheet.merge_range(row,col,row,header_len, time_title, wbf['title_doc'])
 
             row += 2
-
+        
         # Handle header (First data)
         if header:
             # Get ordered key from cursor
@@ -120,7 +122,7 @@ class WebReport(models.TransientModel):
                 formated_header_string = key.replace('_',' ')
                 # IF capitalize params is true and not all word is uppercase, capitalize words
                 if capitalize and not formated_header_string.isupper():
-                    formated_header_string = formated_header_string.capitalize()
+                    formated_header_string = self.custom_title(formated_header_string)
 
                 worksheet.write(row, col, formated_header_string, wbf['header'])
                 
@@ -130,7 +132,6 @@ class WebReport(models.TransientModel):
             row +=1
             col = 0
 
-        
         for line in data:
             col = 0
             
@@ -149,6 +150,10 @@ class WebReport(models.TransientModel):
 
                 # Change column size if content bigger than previous stored size
                 current_column_index = header_titles.index(key) + int(numbering)
+
+                # makesure each of data dictionary could be convert to str (handle UnicodeEncodeError)
+                line[key] = line[key].encode('ascii', 'ignore').decode('ascii') if line[key] and type(line[key]) not in (float, int) else line[key]
+
                 if column_size[current_column_index] < len(str(line[key])):
                     column_size[current_column_index] = (len(str(line[key])))
 
