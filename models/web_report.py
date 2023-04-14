@@ -11,7 +11,7 @@ import tempfile
 import xlsxwriter
 import cStringIO
 from cStringIO import StringIO
-from datetime import datetime, timedelta,date
+from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning
@@ -22,6 +22,7 @@ class WebReport(models.TransientModel):
     _name = "web.report"
     _description = "Report Utils"
 
+    
     @api.model
     def _get_default_datetime_plus_7(self): 
         return datetime.now() + timedelta(hours=7)
@@ -29,6 +30,9 @@ class WebReport(models.TransientModel):
     name = fields.Char(string='Name')
     report_file = fields.Binary('File', readonly=True)
 
+    def custom_title(self,text):
+        return re.sub(r"(?:(?<=\W)|^)\w(?=\w)", lambda x: x.group(0).upper(), text)
+    
     wbf = {}
 
     def generate_report(self
@@ -118,7 +122,7 @@ class WebReport(models.TransientModel):
                 formated_header_string = key.replace('_',' ')
                 # IF capitalize params is true and not all word is uppercase, capitalize words
                 if capitalize and not formated_header_string.isupper():
-                    formated_header_string = formated_header_string.capitalize()
+                    formated_header_string = self.custom_title(formated_header_string)
 
                 worksheet.write(row, col, formated_header_string, wbf['header'])
                 
@@ -144,6 +148,11 @@ class WebReport(models.TransientModel):
                 if isinstance(line[key], float):
                     cell_format = 'content_float'
                 worksheet.write(row, col, line[key], wbf[cell_format])
+
+                # makesure each of data dictionary could be convert to str (handle UnicodeEncodeError)
+                if isinstance(line[key], timedelta) or isinstance(line[key], long) or isinstance(line[key], bool):
+                    line[key] = str(line[key])
+                line[key] = line[key].encode('ascii', 'ignore').decode('ascii') if line[key] and type(line[key]) not in (float, int) else line[key]
 
                 # Change column size if content bigger than previous stored size
                 current_column_index = header_titles.index(key) + int(numbering)
