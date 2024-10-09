@@ -24,6 +24,7 @@ Return XLSX Report from the given 'List of Dictionary' data.
 
 
 **Usage Example :**
+1. 
 
     def generate_report(self):
         #Example -> get data
@@ -33,6 +34,10 @@ Return XLSX Report from the given 'List of Dictionary' data.
         
         #Generate report
         return self.env['web.report'].generate_report('My Report Name',my_report_data)
+
+2. From VS Code
+   <img width="975" alt="Screenshot 2024-10-09 at 22 52 24" src="https://github.com/user-attachments/assets/6d5c8526-04be-48d1-a9c5-2e2ba7a154fc">
+
 
 **Authors :**
 - Liong (nagara987@gmail.com)
