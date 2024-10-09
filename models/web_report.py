@@ -115,7 +115,7 @@ class WebReport(models.TransientModel):
                     formated_header_string = key.replace('_',' ')
                     # IF capitalize params is true and not all word is uppercase, capitalize words
                     if capitalize and not formated_header_string.isupper():
-                        formated_header_string = self.custom_title(formated_header_string)
+                        formated_header_string = formated_header_string.capitalize()
 
                     worksheet.write(row, col, formated_header_string, wbf['header'])
                     
@@ -136,6 +136,8 @@ class WebReport(models.TransientModel):
                 cell_format = 'content'
                 if isinstance(line[key], float):
                     cell_format = 'content_float'
+                elif isinstance(line[key], int):
+                    cell_format = 'content_int'
                 worksheet.write(row, col, line[key], wbf[cell_format])
 
                 # Change column size if content bigger than previous stored size
@@ -170,7 +172,7 @@ class WebReport(models.TransientModel):
             worksheet.merge_range('A%s:D%s'%(row+2,row+2), '%s - %s' % (self.sudo().env.user.name, str(self._get_default_datetime_plus_7())) , wbf['footer']) 
             
         workbook.close()
-        out=base64.encodestring(fp.getvalue())
+        out=base64.encodebytes(fp.getvalue())
         report = self.sudo().create({
             'report_file' : out,
             'name' : filename,
@@ -182,7 +184,6 @@ class WebReport(models.TransientModel):
             'name': 'contract',
             'url': '/web/content/web.report/%s/report_file/%s?download=true' % (report.id, filename)
         }  
-            
     
     def add_workbook_format(self, workbook, header_color):
         
@@ -206,12 +207,19 @@ class WebReport(models.TransientModel):
         self.wbf['content'].set_bottom()
         self.wbf['content'].set_font_size(10)                
 
-        self.wbf['content_float'] = workbook.add_format({'align': 'right','num_format': '#,##0'})
+        self.wbf['content_float'] = workbook.add_format({'align': 'right','num_format': '#,##0.00'})
         self.wbf['content_float'].set_right() 
         self.wbf['content_float'].set_left()
         self.wbf['content_float'].set_top()
         self.wbf['content_float'].set_bottom()
         self.wbf['content_float'].set_font_size(10)                
+        
+        self.wbf['content_int'] = workbook.add_format({'align': 'right','num_format': '#,##0'})
+        self.wbf['content_int'].set_right() 
+        self.wbf['content_int'].set_left()
+        self.wbf['content_int'].set_top()
+        self.wbf['content_int'].set_bottom()
+        self.wbf['content_int'].set_font_size(10)                
         
         return workbook   
     
