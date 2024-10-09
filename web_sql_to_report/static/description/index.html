@@ -442,21 +442,25 @@ ul.auto-toc {
     <h3>Usage Example :</h3>
     <div class="code">
       1. Code
+        <br/>
         <pre>
-def generate_report(self):
-    # Example : get data
-    query = " SELECT * from res_partner limit 10"
-    self.env.cr.execute(query)
-    my_report_data = self.env.cr.dictfetchall()
-    # Generate report
-    return self.env['web.report'].generate_report('My Report Name', my_report_data)
+          def generate_report(self):
+              # Example : get data
+              query = " SELECT * from res_partner limit 10"
+              self.env.cr.execute(query)
+              my_report_data = self.env.cr.dictfetchall()
+              # Generate report
+              return self.env['web.report'].generate_report('My Report Name', my_report_data)
         </pre>
     
 
 
     2. From VS Code
+    <br/>
     <img width="975" alt="Screenshot 2024-10-09 at 22 52 24" src="https://github.com/user-attachments/assets/6d5c8526-04be-48d1-a9c5-2e2ba7a154fc" style="max-width: 100%; width: 80%; margin: 0 auto; display: block;">
     </div>
+
+    <br/><br/>
     
     <h3>Result Example :</h3>
     <div class="example">
