@@ -1,26 +1,14 @@
 import base64
-import calendar
-import io
-import logging
-import os
-import pytz
 import re
-import string
-import time
-import tempfile
 import xlsxwriter
-import cStringIO
 from cStringIO import StringIO
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from openerp import models, fields, api, _
 from openerp.exceptions import Warning
-from xlsxwriter.utility import xl_rowcol_to_cell
-from lxml import etree
 
 class WebReport(models.TransientModel):
-    _name = "web.report"
-    _description = "Report Utils"
+    _name = 'web.report'
+    _description = 'Report Utils'
 
     
     @api.model
@@ -148,11 +136,6 @@ class WebReport(models.TransientModel):
                 if isinstance(line[key], float):
                     cell_format = 'content_float'
                 worksheet.write(row, col, line[key], wbf[cell_format])
-
-                # makesure each of data dictionary could be convert to str (handle UnicodeEncodeError)
-                if isinstance(line[key], timedelta) or isinstance(line[key], long) or isinstance(line[key], bool):
-                    line[key] = str(line[key])
-                line[key] = line[key].encode('ascii', 'ignore').decode('ascii') if line[key] and type(line[key]) not in (float, int) else line[key]
 
                 # Change column size if content bigger than previous stored size
                 current_column_index = header_titles.index(key) + int(numbering)
