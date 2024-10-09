@@ -378,8 +378,10 @@ ul.auto-toc {
             font-family: Arial, sans-serif;
             line-height: 1.6;
             margin: 20px;
+            margin-left: 40px;
+            margin-right: 40px;
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: #333;
         }
         pre {
@@ -410,16 +412,15 @@ ul.auto-toc {
             border-radius: 5px;
         }
         .example img {
-            max-width: 100%;
+            max-width: 80%;
         }
     </style>
 </head>
 <body>
-    <h1>Web-Report</h1>
     <p>Auto generate xlsx report from query result or 'list of dictionary' data.</p>
     <p>Return XLSX Report from the given 'List of Dictionary' data.</p>
     
-    <h2>List Of Params :</h2>
+    <h3>List Of Params :</h3>
     <ul>
         <li><strong>report_name</strong>: File name of the report before given datetime at the end of it.</li>
         <li><strong>data</strong>: Data with 'List of Dictionary' type, the key will be Header and the value will be inserted into each row.</li>
@@ -435,25 +436,35 @@ ul.auto-toc {
         <li><strong>bottom_remark</strong>: Enable/Disable remark. Gives a remark at the bottom of the workbook. The remark contains the downloader's name & download date.</li>
     </ul>
 
-    <h2>Return :</h2>
+    <h3>Return :</h3>
     <p>XLSX file of the generated report.</p>
 
-    <h2>Usage Example :</h2>
+    <h3>Usage Example :</h3>
     <div class="code">
+      <h4>1. Code</h4>
+      <br/>
         <pre>
-def generate_report(self):
-    # Example : get data
-    query = " SELECT * from res_partner limit 10"
-    self.env.cr.execute(query)
-    my_report_data = self.env.cr.dictfetchall()
-    # Generate report
-    return self.env['web.report'].generate_report('My Report Name', my_report_data)
+          def generate_report(self):
+              # Example : get data
+              query = " SELECT * from res_partner limit 10"
+              self.env.cr.execute(query)
+              my_report_data = self.env.cr.dictfetchall()
+              # Generate report
+              return self.env['web.report'].generate_report('My Report Name', my_report_data)
         </pre>
+    
+
+
+    <h4>2. From VS Code</h4>
+    <br/>
+    <img width="975" alt="Screenshot 2024-10-09 at 22 52 24" src="https://github.com/user-attachments/assets/6d5c8526-04be-48d1-a9c5-2e2ba7a154fc" style="max-width: 100%; width: 80%; margin: 0 auto; display: block;">
     </div>
 
-    <h2>Result Example :</h2>
+    <br/><br/>
+
+    <h3>Result Example :</h3>
     <div class="example">
-        <img src="https://user-images.githubusercontent.com/52643098/134668255-ffed5b33-52bf-4762-8d60-75b007c2e38d.png" alt="Report Example">
+        <img src="https://user-images.githubusercontent.com/52643098/134668255-ffed5b33-52bf-4762-8d60-75b007c2e38d.png" alt="Report Example" style="max-width: 100%; width: 80%; margin: 0 auto; display: block;">
     </div>
 </body>
 </html>
