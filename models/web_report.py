@@ -1,22 +1,10 @@
 import base64
-import calendar
-import io
-import logging
-import os
-import pytz
 import re
-import string
-import time
-import tempfile
 import xlsxwriter
-import cStringIO
 from cStringIO import StringIO
-from datetime import datetime, timedelta,date
-from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import Warning
-from xlsxwriter.utility import xl_rowcol_to_cell
-from lxml import etree
 
 class WebReport(models.TransientModel):
     _name = 'web.report'
