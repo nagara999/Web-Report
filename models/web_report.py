@@ -19,8 +19,8 @@ from xlsxwriter.utility import xl_rowcol_to_cell
 from lxml import etree
 
 class WebReport(models.TransientModel):
-    _name = "web.report"
-    _description = "Report Utils"
+    _name = 'web.report'
+    _description = 'Report Utils'
 
     
     @api.model
@@ -38,6 +38,7 @@ class WebReport(models.TransientModel):
     def generate_report(self
         , report_name 
         , data
+        , cursor=None
         , start_date=False
         , end_date=False
         , header=True
@@ -48,6 +49,7 @@ class WebReport(models.TransientModel):
         , freeze_panes=True
         , freeze_panes_column=0
         , bottom_remark=True
+        , header_title=None
         ):
         """ Return XLSX Report from the given 'List of Dictionary' data.
             :param report_name: File name of the report before given datetime at the end of it
@@ -103,11 +105,18 @@ class WebReport(models.TransientModel):
         # Handle header (First data)
         if header:
             # Get ordered key from cursor
-            key_ordered = [d[0] for d in self._cr.description]
-            if key_ordered:
-                header_titles = key_ordered
+            if header_title:
+                header_titles = header_title
             else:
-                header_titles = data[0]
+                key_ordered = [d[0] for d in self._cr.description]
+                if cursor:
+                    key_ordered = [d[0] for d in cursor.description]
+
+                if key_ordered:
+                    header_titles = key_ordered
+                else:
+                    key_ordered = [d[0] for d in self._cr.description]
+                    header_titles = key_ordered
 
 
             # Give column number
@@ -152,7 +161,7 @@ class WebReport(models.TransientModel):
                 current_column_index = header_titles.index(key) + int(numbering)
 
                 # makesure each of data dictionary could be convert to str (handle UnicodeEncodeError)
-                line[key] = line[key].encode('ascii', 'ignore').decode('ascii') if line[key] and type(line[key]) not in (float, int) else line[key]
+                line[key] = line[key].encode('ascii', 'ignore').decode('ascii') if line[key] and type(line[key]) not in (float, int, bool) else line[key]
 
                 if column_size[current_column_index] < len(str(line[key])):
                     column_size[current_column_index] = (len(str(line[key])))
