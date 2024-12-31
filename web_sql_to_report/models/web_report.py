@@ -170,7 +170,7 @@ class WebReport(models.TransientModel):
         fp.close()
         return {
             'type': 'ir.actions.act_url',
-            'name': 'contract',
+            'target': 'new',
             'url': '/web/content/web.report/%s/report_file/%s?download=true' % (report.id, filename)
         }  
     
